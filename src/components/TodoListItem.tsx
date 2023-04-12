@@ -86,24 +86,18 @@ const TodoListItem = ({
   };
 
   return (
-    <Tooltip
-      label={`Created on: ${todo.createdAt.toLocaleString("sl-SI", {
-        dateStyle: "short",
-        timeStyle: "short",
-      })}`}
-      position="bottom-start"
-    >
-      <Card sx={listStyles} radius="md" p="xs" my="sm" pb="none">
-        <LoadingOverlay visible={actionPending} />
-        <Group position="apart">
-          {itemState === "view" && (
-            <>
-              <Text strikethrough={todo.complete}>{todo.agenda}</Text>
-              {todo.complete && <Overlay />}
+    <Card sx={listStyles} radius="md" p="xs" my="sm" pb="none">
+      <LoadingOverlay visible={actionPending} />
+      <Group position="apart">
+        {itemState === "view" && (
+          <>
+            <Text strikethrough={todo.complete}>{todo.agenda}</Text>
+            {todo.complete && <Overlay />}
 
-              <Group spacing="xs" p=".25rem" sx={{ zIndex: 201 }}>
-                {!todo.complete && (
-                  <>
+            <Group spacing="xs" p=".25rem" sx={{ zIndex: 201 }}>
+              {!todo.complete && (
+                <>
+                  <Tooltip label="Complete" position="left">
                     <ActionIcon
                       variant="light"
                       color="lime"
@@ -111,6 +105,8 @@ const TodoListItem = ({
                     >
                       <IconCheck />
                     </ActionIcon>
+                  </Tooltip>
+                  <Tooltip label="Edit" position="left">
                     <ActionIcon
                       variant="light"
                       color="orange"
@@ -118,49 +114,51 @@ const TodoListItem = ({
                     >
                       <IconEdit />
                     </ActionIcon>
-                  </>
-                )}
+                  </Tooltip>
+                </>
+              )}
+              <Tooltip label="Delete" position="left">
                 <ActionIcon variant="light" color="red" onClick={deleteTodo}>
                   <IconTrash />
                 </ActionIcon>
-              </Group>
-            </>
-          )}
-          {itemState === "edit" && (
-            <>
-              <TextInput
-                sx={{ flexGrow: 1 }}
-                variant="unstyled"
-                defaultValue={todo.agenda}
-                onChange={(evt) => setUpdatedAgenda(evt.currentTarget.value)}
-                ref={updateInputRef}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") updateTodo();
-                }}
-                styles={(theme) => ({
-                  wrapper: {
-                    borderRadius: theme.radius.sm,
-                    paddingInline: theme.spacing.xs,
-                    ":focus-within": { outline: "1px solid whitesmoke" },
-                  },
-                  input: {
-                    fontSize: theme.fontSizes.md,
-                  },
-                })}
-              />
-              <Group spacing="xs" p=".25rem">
-                <ActionIcon variant="light" color="lime" onClick={updateTodo}>
-                  <IconDeviceFloppy />
-                </ActionIcon>
-                <ActionIcon variant="light" color="orange" onClick={setToView}>
-                  <IconX />
-                </ActionIcon>
-              </Group>
-            </>
-          )}
-        </Group>
-      </Card>
-    </Tooltip>
+              </Tooltip>
+            </Group>
+          </>
+        )}
+        {itemState === "edit" && (
+          <>
+            <TextInput
+              variant="unstyled"
+              defaultValue={todo.agenda}
+              onChange={(evt) => setUpdatedAgenda(evt.currentTarget.value)}
+              ref={updateInputRef}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") updateTodo();
+              }}
+              styles={(theme) => ({
+                root: { flexGrow: 1 },
+                wrapper: {
+                  borderRadius: theme.radius.sm,
+                  paddingInline: theme.spacing.xs,
+                  ":focus-within": { outline: "1px solid whitesmoke" },
+                },
+                input: {
+                  fontSize: theme.fontSizes.md,
+                },
+              })}
+            />
+            <Group spacing="xs" p=".25rem">
+              <ActionIcon variant="light" color="lime" onClick={updateTodo}>
+                <IconDeviceFloppy />
+              </ActionIcon>
+              <ActionIcon variant="light" color="orange" onClick={setToView}>
+                <IconX />
+              </ActionIcon>
+            </Group>
+          </>
+        )}
+      </Group>
+    </Card>
   );
 };
 
