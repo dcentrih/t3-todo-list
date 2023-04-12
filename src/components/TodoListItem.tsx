@@ -140,7 +140,11 @@ const TodoListItem = ({
                 wrapper: {
                   borderRadius: theme.radius.sm,
                   paddingInline: theme.spacing.xs,
-                  ":focus-within": { outline: "1px solid whitesmoke" },
+                  ":focus-within": {
+                    outline: `1px solid ${
+                      theme.colorScheme === "dark" ? "whitesmoke" : "gray"
+                    }`,
+                  },
                 },
                 input: {
                   fontSize: theme.fontSizes.md,
@@ -148,12 +152,16 @@ const TodoListItem = ({
               })}
             />
             <Group spacing="xs" p=".25rem">
-              <ActionIcon variant="light" color="lime" onClick={updateTodo}>
-                <IconDeviceFloppy />
-              </ActionIcon>
-              <ActionIcon variant="light" color="orange" onClick={setToView}>
-                <IconX />
-              </ActionIcon>
+              <Tooltip label="Save changes" position="left">
+                <ActionIcon variant="light" color="lime" onClick={updateTodo}>
+                  <IconDeviceFloppy />
+                </ActionIcon>
+              </Tooltip>
+              <Tooltip label="Cancel" position="left">
+                <ActionIcon variant="light" color="orange" onClick={setToView}>
+                  <IconX />
+                </ActionIcon>
+              </Tooltip>
             </Group>
           </>
         )}

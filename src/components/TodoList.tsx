@@ -19,7 +19,13 @@ const TodoList = ({
       {todos?.slice((page - 1) * pageSize, page * pageSize).map((todo) => (
         <TodoListItem key={todo.id} todo={todo} refetch={refetch} />
       ))}
-      <Pagination total={total} value={page} onChange={setPage} />
+      <Pagination
+        color="gray"
+        total={total}
+        radius="md"
+        value={page}
+        onChange={setPage}
+      />
     </Box>
   );
 };

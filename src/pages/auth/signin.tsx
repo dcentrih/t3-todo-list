@@ -4,8 +4,9 @@ import { notifications } from "@mantine/notifications";
 import { IconBrandGithub, IconMail } from "@tabler/icons-react";
 import { type GetServerSidePropsContext, type NextPage } from "next";
 import { signIn } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getServerAuthSession } from "src/server/auth";
 import { VALID_EMAIL } from "src/utils/constants";
 
@@ -18,6 +19,11 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 };
 
 const SignIn: NextPage = () => {
+  const [signInLoad, setSignInLoad] = useState<null | "github" | "email">(null);
+  const { query } = useRouter();
+  const { error } = query;
+  const errorShown = useRef(false);
+
   const form = useForm({
     initialValues: {
       email: "",
@@ -31,11 +37,10 @@ const SignIn: NextPage = () => {
     clearInputErrorOnChange: true,
   });
 
-  const signInWithEmail = (val: { email: string }) => void signIn("email", val);
-
-  const { query } = useRouter();
-  const { error } = query;
-  const errorShown = useRef(false);
+  const signInWithEmail = (val: { email: string }) => {
+    setSignInLoad("github");
+    void signIn("email", val);
+  };
 
   useEffect(() => {
     if (error && !errorShown.current) {
@@ -44,17 +49,26 @@ const SignIn: NextPage = () => {
         title: "An error has occured",
         message: "There was an error while trying to sign you in.",
         color: "red",
-        autoClose: false,
+        autoClose: 10000,
       });
     }
   }, [error, errorShown]);
 
   return (
     <Box miw={{ base: "280px", sm: "300px" }} px="sm">
+      <Head>
+        <title>T3 Todo List - Sign In</title>
+      </Head>
       <Title
         align="center"
         variant="gradient"
-        gradient={{ from: "indigo", to: "white", deg: 45 }}
+        sx={({ fn, colorScheme }) => ({
+          backgroundImage: fn.gradient({
+            from: colorScheme === "dark" ? "indigo" : "blue",
+            to: colorScheme === "dark" ? "indigo.4" : "cyan.4",
+            deg: 45,
+          }),
+        })}
       >
         Sign in
       </Title>
@@ -66,7 +80,11 @@ const SignIn: NextPage = () => {
             variant="gradient"
             gradient={{ from: "violet", to: "grape.5", deg: -45 }}
             leftIcon={<IconBrandGithub />}
-            onClick={() => void signIn("github")}
+            onClick={() => {
+              setSignInLoad("github");
+              void signIn("github");
+            }}
+            loading={signInLoad === "github"}
             sx={(theme) => ({
               ":hover": {
                 backgroundImage: theme.fn.gradient({
@@ -83,6 +101,7 @@ const SignIn: NextPage = () => {
         <Divider label="or sign in with" labelPosition="center" my="sm" />
         <form onSubmit={form.onSubmit((val) => signInWithEmail(val))}>
           <TextInput
+            required
             type="email"
             placeholder="your@email.com"
             {...form.getInputProps("email")}
@@ -94,10 +113,11 @@ const SignIn: NextPage = () => {
               variant="gradient"
               gradient={{ from: "blue", to: "cyan.5", deg: 45 }}
               leftIcon={<IconMail />}
+              loading={signInLoad === "email"}
               sx={(theme) => ({
                 ":hover": {
                   backgroundImage: theme.fn.gradient({
-                    from: "blue",
+                    from: "blue.4",
                     to: "cyan.4",
                     deg: 45,
                   }),

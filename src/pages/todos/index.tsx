@@ -10,6 +10,8 @@ import {
 } from "@mantine/core";
 import { type GetServerSidePropsContext } from "next";
 import { signOut } from "next-auth/react";
+import Head from "next/head";
+import { useState } from "react";
 import NewTodo from "src/components/NewTodo";
 import SortMenu from "src/components/SortMenu";
 import TodoList from "src/components/TodoList";
@@ -28,6 +30,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
 const Todos = () => {
   const [sortBy] = useSortTodosBy();
+  const [signOutLoad, setSignOutLoad] = useState(false);
   const allTodosQuery = api.todo.all.useQuery(
     { sort: sortBy },
     { refetchInterval: 1000 * 60 * 60 }
@@ -54,6 +57,9 @@ const Todos = () => {
 
   return (
     <Card shadow="xl" p="md" radius="md" withBorder w="100%">
+      <Head>
+        <title>T3 Todo List - My Todos</title>
+      </Head>
       <Group>
         <Title
           size="h2"
@@ -70,7 +76,14 @@ const Todos = () => {
         >
           What&apos;s on your agenda?
         </Title>
-        <Button variant="subtle" onClick={() => void signOut()}>
+        <Button
+          variant="subtle"
+          onClick={() => {
+            setSignOutLoad(true);
+            void signOut();
+          }}
+          loading={signOutLoad}
+        >
           Sign out
         </Button>
         <SortMenu />
