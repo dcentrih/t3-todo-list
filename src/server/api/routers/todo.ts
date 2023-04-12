@@ -10,6 +10,9 @@ export const todoRouter = createTRPCRouter({
         orderBy: {
           createdAt: input.sort,
         },
+        where: {
+          userId: ctx.session.user.id,
+        },
       });
     }),
   create: protectedProcedure
