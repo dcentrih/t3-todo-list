@@ -4,8 +4,9 @@ import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { api } from "src/utils/api";
 
-const NewTodo = ({ refetch }: { refetch: () => Promise<any> }) => {
+const NewTodo = () => {
   const [isCreating, setIsCreating] = useState(false);
+  const utils = api.useContext();
 
   const form = useForm({
     initialValues: {
@@ -17,19 +18,16 @@ const NewTodo = ({ refetch }: { refetch: () => Promise<any> }) => {
     },
   });
 
-  const createTodoMut = api.todo.create.useMutation();
+  const createTodoMut = api.todo.create.useMutation({
+    onSettled() {
+      void utils.todo.all.invalidate();
+      form.reset();
+      setIsCreating(false);
+    },
+  });
   const createTodo = ({ agenda }: { agenda: string }) => {
     setIsCreating(true);
-    createTodoMut.mutate(
-      { agenda },
-      {
-        onSettled() {
-          void refetch();
-          form.reset();
-          setIsCreating(false);
-        },
-      }
-    );
+    createTodoMut.mutate({ agenda });
   };
 
   return (

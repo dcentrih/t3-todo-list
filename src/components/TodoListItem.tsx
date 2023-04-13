@@ -24,17 +24,12 @@ const listStyles = ({ colorScheme, colors }: MantineTheme) => ({
   backgroundColor: colorScheme === "dark" ? colors.dark[5] : colors.gray[1],
 });
 
-const TodoListItem = ({
-  todo,
-  refetch,
-}: {
-  todo: Todo;
-  refetch: () => Promise<any>;
-}) => {
+const TodoListItem = ({ todo }: { todo: Todo }) => {
   const [itemState, setItemState] = useState<"view" | "edit">("view");
   const [updatedAgenda, setUpdatedAgenda] = useState("");
-  const updateInputRef = useRef<HTMLInputElement>(null);
   const [actionPending, setActionPending] = useState(false);
+  const updateInputRef = useRef<HTMLInputElement>(null);
+  const utils = api.useContext();
 
   const setToEdit = () => setItemState("edit");
   const setToView = () => setItemState("view");
@@ -45,44 +40,38 @@ const TodoListItem = ({
     }
   }, [itemState]);
 
-  const updateTodoMut = api.todo.update.useMutation();
-  const completeTodoMut = api.todo.complete.useMutation();
-  const deleteTodoMut = api.todo.delete.useMutation();
+  // Mutations
+  const updateTodoMut = api.todo.update.useMutation({
+    onSettled() {
+      setToView();
+      void utils.todo.all.invalidate();
+      setActionPending(false);
+    },
+  });
+  const completeTodoMut = api.todo.complete.useMutation({
+    onSettled() {
+      void utils.todo.all.invalidate();
+      setActionPending(false);
+    },
+  });
+  const deleteTodoMut = api.todo.delete.useMutation({
+    onSettled() {
+      void utils.todo.all.invalidate();
+    },
+  });
+
+  // User actions to mutate
   const updateTodo = () => {
     setActionPending(true);
-    updateTodoMut.mutate(
-      { id: todo.id, agenda: updatedAgenda },
-      {
-        onSettled() {
-          setToView();
-          void refetch();
-          setActionPending(false);
-        },
-      }
-    );
+    updateTodoMut.mutate({ id: todo.id, agenda: updatedAgenda });
   };
   const completeTodo = () => {
     setActionPending(true);
-    completeTodoMut.mutate(
-      { id: todo.id },
-      {
-        onSettled() {
-          void refetch();
-          setActionPending(false);
-        },
-      }
-    );
+    completeTodoMut.mutate({ id: todo.id });
   };
   const deleteTodo = () => {
     setActionPending(true);
-    deleteTodoMut.mutate(
-      { id: todo.id },
-      {
-        onSettled() {
-          void refetch();
-        },
-      }
-    );
+    deleteTodoMut.mutate({ id: todo.id });
   };
 
   return (

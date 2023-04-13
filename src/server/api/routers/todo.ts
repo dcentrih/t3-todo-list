@@ -4,11 +4,11 @@ import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 
 export const todoRouter = createTRPCRouter({
   all: protectedProcedure
-    .input(z.object({ sort: z.enum(["asc", "desc"]).default("desc") }))
+    .input(z.object({ sort: z.enum(["asc", "desc"]) }).nullish())
     .query(async ({ input, ctx }) => {
       return await ctx.prisma.todo.findMany({
         orderBy: {
-          createdAt: input.sort,
+          createdAt: input?.sort ?? "desc",
         },
         where: {
           userId: ctx.session.user.id,
