@@ -5,6 +5,7 @@ import {
   Divider,
   Group,
   Title,
+  type CSSObject,
   type MantineTheme,
 } from "@mantine/core";
 import { type GetServerSidePropsContext } from "next";
@@ -16,7 +17,7 @@ import TodoList from "src/components/TodoList";
 import TodoMenu from "src/components/TodoMenu";
 import { getServerAuthSession } from "src/server/auth";
 
-const titleSx = ({ fn, colorScheme }: MantineTheme) => ({
+const titleSx = ({ fn, colorScheme }: MantineTheme): CSSObject => ({
   flexGrow: 1,
   backgroundImage: fn.gradient({
     from: colorScheme === "dark" ? "indigo" : "blue",
@@ -28,7 +29,7 @@ const titleSx = ({ fn, colorScheme }: MantineTheme) => ({
   },
 });
 
-const buttonGroupSx = ({ fn }: MantineTheme) => ({
+const buttonGroupSx = ({ fn }: MantineTheme): CSSObject => ({
   flexGrow: 1,
   [fn.smallerThan("xs")]: {
     flexDirection: "column",
