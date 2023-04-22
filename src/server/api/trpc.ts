@@ -65,9 +65,10 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
  * errors on the backend.
  */
-import { initTRPC, TRPCError } from "@trpc/server";
+import { TRPCError, initTRPC, type inferRouterInputs } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { type AppRouter } from "./root";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -128,3 +129,19 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+type TodoInputId = inferRouterInputs<AppRouter>["todo"]["complete"];
+
+export const userCan = t.middleware(async ({ input, ctx, next }) => {
+  const { id } = input as TodoInputId;
+  const userCan = await ctx.prisma.todo.findFirst({
+    where: {
+      id,
+      userId: ctx.session?.user.id,
+    },
+  });
+
+  if (!userCan) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+  return next();
+});

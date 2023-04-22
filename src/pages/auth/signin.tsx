@@ -98,7 +98,7 @@ const SignIn: NextPage = () => {
             Sign in with GitHub
           </Button>
         </Group>
-        <Divider label="or sign in with" labelPosition="center" my="sm" />
+        <Divider label="or continue with" labelPosition="center" my="sm" />
         <form onSubmit={form.onSubmit((val) => signInWithEmail(val))}>
           <TextInput
             required

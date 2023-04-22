@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  userCan,
+} from "src/server/api/trpc";
 
 export const todoRouter = createTRPCRouter({
   all: protectedProcedure
@@ -27,6 +31,7 @@ export const todoRouter = createTRPCRouter({
     }),
   update: protectedProcedure
     .input(z.object({ id: z.string(), agenda: z.string() }))
+    .use(userCan)
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.todo.update({
         data: {
@@ -37,6 +42,7 @@ export const todoRouter = createTRPCRouter({
     }),
   complete: protectedProcedure
     .input(z.object({ id: z.string() }))
+    .use(userCan)
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.todo.update({
         data: {
@@ -47,6 +53,7 @@ export const todoRouter = createTRPCRouter({
     }),
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
+    .use(userCan)
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.todo.delete({
         where: { id: input.id },
