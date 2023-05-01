@@ -1,6 +1,7 @@
 import { ActionIcon, Menu, Select } from "@mantine/core";
 import { IconSettings } from "@tabler/icons-react";
 import { useState } from "react";
+
 import { usePageSize, useSortTodosBy } from "src/store";
 
 const TodoMenu = () => {

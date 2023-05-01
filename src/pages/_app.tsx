@@ -4,14 +4,15 @@ import {
   type ColorScheme,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
+import { Notifications } from "@mantine/notifications";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
-import "src/styles/globals.css";
+
+import { api } from "src/utils/api";
 import AppLayout from "./_layout";
 
-import { Notifications } from "@mantine/notifications";
-import { api } from "src/utils/api";
+import "src/styles/globals.css";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

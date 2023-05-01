@@ -1,5 +1,6 @@
 import { AppShell, Box, Container } from "@mantine/core";
 import { type ReactNode } from "react";
+
 import AppHeader from "src/components/AppHeader";
 
 const AppLayout = ({ children }: { children: ReactNode }) => {

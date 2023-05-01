@@ -1,4 +1,13 @@
-import { Box, Button, Divider, Group, TextInput, Title } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Divider,
+  Group,
+  TextInput,
+  Title,
+  type CSSObject,
+  type MantineTheme,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconBrandGithub, IconMail } from "@tabler/icons-react";
@@ -7,16 +16,36 @@ import { signIn } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+
 import { getServerAuthSession } from "src/server/auth";
 import { VALID_EMAIL } from "src/utils/constants";
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const session = await getServerAuthSession(ctx);
+const titleSx = ({ fn, colorScheme }: MantineTheme): CSSObject => ({
+  backgroundImage: fn.gradient({
+    from: colorScheme === "dark" ? "indigo" : "blue",
+    to: colorScheme === "dark" ? "indigo.4" : "cyan.4",
+    deg: 45,
+  }),
+});
 
-  if (!session) return { props: {} };
-
-  return { redirect: { destination: "/todos", permanent: false } };
-};
+const githubBtnSx = ({ fn }: MantineTheme): CSSObject => ({
+  ":hover": {
+    backgroundImage: fn.gradient({
+      from: "violet",
+      to: "grape.4",
+      deg: -45,
+    }),
+  },
+});
+const emailBtnSx = ({ fn }: MantineTheme): CSSObject => ({
+  ":hover": {
+    backgroundImage: fn.gradient({
+      from: "blue.4",
+      to: "cyan.4",
+      deg: 45,
+    }),
+  },
+});
 
 const SignIn: NextPage = () => {
   const [signInLoad, setSignInLoad] = useState<null | "github" | "email">(null);
@@ -59,17 +88,7 @@ const SignIn: NextPage = () => {
       <Head>
         <title>T3 Todo List - Sign In</title>
       </Head>
-      <Title
-        align="center"
-        variant="gradient"
-        sx={({ fn, colorScheme }) => ({
-          backgroundImage: fn.gradient({
-            from: colorScheme === "dark" ? "indigo" : "blue",
-            to: colorScheme === "dark" ? "indigo.4" : "cyan.4",
-            deg: 45,
-          }),
-        })}
-      >
+      <Title align="center" variant="gradient" sx={titleSx}>
         Sign in
       </Title>
 
@@ -85,15 +104,7 @@ const SignIn: NextPage = () => {
               void signIn("github");
             }}
             loading={signInLoad === "github"}
-            sx={(theme) => ({
-              ":hover": {
-                backgroundImage: theme.fn.gradient({
-                  from: "violet",
-                  to: "grape.4",
-                  deg: -45,
-                }),
-              },
-            })}
+            sx={githubBtnSx}
           >
             Sign in with GitHub
           </Button>
@@ -114,15 +125,7 @@ const SignIn: NextPage = () => {
               gradient={{ from: "blue", to: "cyan.5", deg: 45 }}
               leftIcon={<IconMail />}
               loading={signInLoad === "email"}
-              sx={(theme) => ({
-                ":hover": {
-                  backgroundImage: theme.fn.gradient({
-                    from: "blue.4",
-                    to: "cyan.4",
-                    deg: 45,
-                  }),
-                },
-              })}
+              sx={emailBtnSx}
             >
               Sign in with your Email
             </Button>
@@ -134,3 +137,11 @@ const SignIn: NextPage = () => {
 };
 
 export default SignIn;
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const session = await getServerAuthSession(ctx);
+
+  if (!session) return { props: {} };
+
+  return { redirect: { destination: "/todos", permanent: false } };
+};

@@ -2,6 +2,7 @@ import { ActionIcon, Group, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
+
 import { api } from "src/utils/api";
 
 const NewTodo = () => {
@@ -14,7 +15,7 @@ const NewTodo = () => {
     },
     validate: {
       agenda: (val) =>
-        val !== "" ? null : "Todo mush containt at least 1 word.",
+        val !== "" ? null : "Todo mush contain at least 1 word.",
     },
   });
 

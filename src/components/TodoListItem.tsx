@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   Tooltip,
+  type CSSObject,
   type MantineTheme,
 } from "@mantine/core";
 import { type Todo } from "@prisma/client";
@@ -18,10 +19,27 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
+
 import { api } from "src/utils/api";
 
-const listStyles = ({ colorScheme, colors }: MantineTheme) => ({
+const listSx = ({ colorScheme, colors }: MantineTheme): CSSObject => ({
   backgroundColor: colorScheme === "dark" ? colors.dark[5] : colors.gray[1],
+});
+
+const agendaEditStyles = (theme: MantineTheme) => ({
+  root: { flexGrow: 1 },
+  wrapper: {
+    borderRadius: theme.radius.sm,
+    paddingInline: theme.spacing.xs,
+    ":focus-within": {
+      outline: `1px solid ${
+        theme.colorScheme === "dark" ? "whitesmoke" : "gray"
+      }`,
+    },
+  },
+  input: {
+    fontSize: theme.fontSizes.md,
+  },
 });
 
 const TodoListItem = ({ todo }: { todo: Todo }) => {
@@ -75,7 +93,7 @@ const TodoListItem = ({ todo }: { todo: Todo }) => {
   };
 
   return (
-    <Card sx={listStyles} radius="md" p="xs" my="sm" pb="none">
+    <Card sx={listSx} radius="md" p="xs" my="sm" pb="none">
       <LoadingOverlay visible={actionPending} />
       <Group position="apart">
         {itemState === "view" && (
@@ -124,21 +142,7 @@ const TodoListItem = ({ todo }: { todo: Todo }) => {
               onKeyDown={(e) => {
                 if (e.key === "Enter") updateTodo();
               }}
-              styles={(theme) => ({
-                root: { flexGrow: 1 },
-                wrapper: {
-                  borderRadius: theme.radius.sm,
-                  paddingInline: theme.spacing.xs,
-                  ":focus-within": {
-                    outline: `1px solid ${
-                      theme.colorScheme === "dark" ? "whitesmoke" : "gray"
-                    }`,
-                  },
-                },
-                input: {
-                  fontSize: theme.fontSizes.md,
-                },
-              })}
+              styles={agendaEditStyles}
             />
             <Group spacing="xs" p=".25rem">
               <Tooltip label="Save changes" position="left">
